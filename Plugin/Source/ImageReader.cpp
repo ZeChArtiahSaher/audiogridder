@@ -156,7 +156,7 @@ bool ImageReader::initCodec() {
                          m_outputFrame->height, 1);
 
     m_swsCtx = sws_getContext(m_widthPadded, m_heightPadded, m_inputCodecCtx->pix_fmt, m_width, m_height, fmt,
-                              SWS_BICUBIC, nullptr, nullptr, nullptr);
+                              SWS_BILINEAR, nullptr, nullptr, nullptr);
 
     logln("ready to process image stream with resolution: " << m_width << "x" << m_height << " *" << m_scale);
 
