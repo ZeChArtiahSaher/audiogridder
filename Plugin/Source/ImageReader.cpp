@@ -123,7 +123,7 @@ bool ImageReader::initCodec() {
         return false;
     }
 
-    m_inputCodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
+    m_inputCodecCtx->pix_fmt = AV_PIX_FMT_ARGB;
     m_inputCodecCtx->time_base.num = 1;
     m_inputCodecCtx->time_base.den = 20;
     m_inputCodecCtx->width = m_widthPadded;

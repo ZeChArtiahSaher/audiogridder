@@ -35,6 +35,7 @@ void ScreenRecorder::initialize(ScreenRecorder::EncoderMode encMode, EncoderQual
     av_log_set_level(AV_LOG_QUIET);
 
     m_encMode = encMode;
+    m_encMode = WEBP;
     const char* encName = "unset";
     switch (m_encMode) {
         case WEBP:
@@ -317,6 +318,7 @@ bool ScreenRecorder::prepareInput() {
     logln("prepareInput: input pixel format is " << m_captureCodecCtx->pix_fmt);
 
     m_pxSize = av_image_get_linesize(m_captureCodecCtx->pix_fmt, 10, 0) / 10;
+    m_pxSize = av_image_get_linesize(m_captureCodecCtx->pix_fmt, 64, 0) / 64;
 
     return true;
 }
@@ -360,7 +362,7 @@ bool ScreenRecorder::prepareOutput() {
     m_scaledWith = m_downScale ? (int)(m_captureRect.getWidth() / m_scale) : m_captureRect.getWidth();
     m_scaledHeight = m_downScale ? (int)(m_captureRect.getHeight() / m_scale) : m_captureRect.getHeight();
 
-    m_outputCodecCtx->pix_fmt = m_encMode == MJPEG ? AV_PIX_FMT_YUVJ420P : AV_PIX_FMT_YUV420P;
+    m_outputCodecCtx->pix_fmt = AV_PIX_FMT_BGRA;
     m_outputCodecCtx->time_base.num = 1;
     m_outputCodecCtx->time_base.den = 30;
     m_outputCodecCtx->width = m_scaledWith;
@@ -376,8 +378,15 @@ bool ScreenRecorder::prepareOutput() {
     switch (m_encMode) {
         case WEBP:
             av_dict_set(&opts, "preset", "none", 0);
-            av_dict_set(&opts, "compression_level", "1", 0);
-            av_dict_set(&opts, "global_quality", String(m_quality).getCharPointer(), 0);
+            av_dict_set(&opts, "compression_level", "0", 0);
+            // av_dict_set(&opts, "lossless", "1", 0);
+            //av_dict_set(&opts, "global_quality", String(m_quality).getCharPointer(), 0);
+            //av_dict_set(&opts, "global_quality", String(100 * FF_QP2LAMBDA + 1).getCharPointer(), 0);
+            av_dict_set(&opts, "quality", "100.0", 0);
+            av_dict_set(&opts, "exact", "1", 0);
+            av_dict_set(&opts, "use_sharp_yuv", "0", 0);
+            av_dict_set(&opts, "method", "6", 0);
+            av_dict_set(&opts, "lossless", "1", 0);
             break;
         case MJPEG:
             av_dict_set(&opts, "b", String(m_quality).getCharPointer(), 0);
