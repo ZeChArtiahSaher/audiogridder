@@ -879,10 +879,12 @@ void Client::ScreenReceiver::run() {
     do {
         if (msg.read(m_socket, &err, 200)) {
             if (PLD(msg).hdr->size > 0) {
-                int width = (int)(PLD(msg).hdr->width / PLD(msg).hdr->scale);
-                int height = (int)(PLD(msg).hdr->height / PLD(msg).hdr->scale);
+                int width = (int)(PLD(msg).hdr->width / PLD(msg).hdr->scale / m_disp->scale);
+                int height = (int)(PLD(msg).hdr->height / PLD(msg).hdr->scale / m_disp->scale);
+
                 auto img = m_imgReader.read(DATA(msg), PLD(msg).hdr->size, PLD(msg).hdr->width, PLD(msg).hdr->height,
-                                            PLD(msg).hdr->widthPadded, PLD(msg).hdr->heightPadded, PLD(msg).hdr->scale);
+                                            PLD(msg).hdr->widthPadded, PLD(msg).hdr->heightPadded, PLD(msg).hdr->scale / m_disp->scale);
+
                 if (nullptr != img) {
                     m_client->setPluginScreen(img, width, height);
                 }

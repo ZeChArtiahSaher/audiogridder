@@ -377,7 +377,8 @@ class Client : public Thread, public LogTag, public MouseListener, public KeyLis
 
     class ScreenReceiver : public Thread, public LogTagDelegate {
       public:
-        ScreenReceiver(Client* clnt, StreamingSocket* sock) : Thread("ScreenWorker"), m_client(clnt), m_socket(sock) {
+        ScreenReceiver(Client* clnt, StreamingSocket* sock) : Thread("ScreenWorker"), m_client(clnt), m_socket(sock)
+            , m_disp(juce::Desktop::getInstance().getDisplays().getPrimaryDisplay()) {
             setLogTagSource(clnt);
             traceScope();
             m_imgReader.setLogTagSource(clnt);
@@ -392,6 +393,8 @@ class Client : public Thread, public LogTag, public MouseListener, public KeyLis
         void run();
 
       private:
+    
+        const juce::Displays::Display * m_disp;
         Client* m_client;
         StreamingSocket* m_socket;
         std::shared_ptr<Image> m_image;
